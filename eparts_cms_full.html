@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EParts — Homepage CMS Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#01213F;--blue:#0059B3;--blue-m:#0072E5;--blue-lt:#EBF4FF;--blue-xlt:#F4F9FF;
+  --accent:#E8550A;--accent-lt:#FFF2EC;
+  --green:#04A85A;--green-lt:#EAFFF5;
+  --amber:#C97800;--amber-lt:#FFF8E8;
+  --purple:#5B3FBD;--purple-lt:#F2EFFF;
+  --red:#CC2828;--red-lt:#FFF0F0;
+  --white:#FFFFFF;--bg:#F0F5FB;--border:#D4E3F4;
+  --text:#0A1628;--muted:#5A7896;--lighter:#9DB8CE;
+  --sidebar:260px;--r:12px;
+  --sh:0 2px 18px rgba(0,56,115,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Figtree',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;background:var(--navy);
+  position:fixed;inset:0 auto 0 0;z-index:60;
+  display:flex;flex-direction:column;padding-bottom:20px;
+  overflow-y:auto;
+}
+.s-logo{padding:20px 22px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;}
+.s-logo-box{width:36px;height:36px;background:var(--blue-m);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;}
+.s-logo-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:#fff;}
+.s-logo-sub{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.6px;text-transform:uppercase;margin-top:1px;}
+
+.s-sep{padding:16px 16px 6px;font-size:10px;font-weight:700;letter-spacing:1.2px;color:rgba(255,255,255,.28);text-transform:uppercase;}
+.s-item{display:flex;align-items:center;gap:10px;padding:9px 14px;margin:2px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.6);transition:.18s;font-weight:500;}
+.s-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+.s-item.active{background:var(--blue-m);color:#fff;}
+.s-item .si{font-size:16px;width:20px;text-align:center;}
+
+/* section nav links */
+.s-subitem{display:flex;align-items:center;gap:8px;padding:7px 14px 7px 44px;margin:1px 10px;border-radius:7px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.45);transition:.15s;}
+.s-subitem:hover{color:rgba(255,255,255,.8);}
+.s-subitem .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.dot-multi{background:#E8A04A;}
+.dot-single{background:#4ABCE8;}
+
+.s-save{margin:auto 10px 0;padding:11px;border-radius:10px;background:var(--accent);border:none;cursor:pointer;font-family:'Figtree',sans-serif;font-weight:700;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;}
+.s-save:hover{background:#C44000;}
+
+/* ─── MAIN ─── */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;}
+
+/* ─── TOPBAR ─── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.t-bc{font-size:13px;color:var(--muted);}
+.t-bc b{color:var(--text);}
+.t-right{display:flex;align-items:center;gap:10px;}
+.t-btn{padding:7px 16px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;}
+.t-prev{background:var(--blue-lt);color:var(--blue);border:1.5px solid #C0DCFF;}
+.t-prev:hover{background:#DAEEFF;}
+.t-pub{background:var(--blue-m);color:#fff;border:none;}
+.t-pub:hover{background:var(--blue);}
+.t-av{width:34px;height:34px;border-radius:50%;background:var(--blue-m);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;}
+
+/* ─── CONTENT ─── */
+.content{padding:28px 32px 64px;max-width:1060px;}
+
+.pg-head{margin-bottom:28px;}
+.pg-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--navy);}
+.pg-desc{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.6;}
+.pg-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+.chip{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;}
+.chip-s{background:var(--blue-lt);color:var(--blue);}
+.chip-m{background:var(--accent-lt);color:var(--accent);}
+.chip-g{background:var(--green-lt);color:var(--green);}
+
+/* ─── SECTION CARD ─── */
+.sec{background:var(--white);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:24px;overflow:hidden;}
+.sec-hd{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sec-hd-l{display:flex;align-items:center;gap:12px;}
+.sec-ico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ico-blue{background:var(--blue-lt);}
+.ico-orange{background:var(--accent-lt);}
+.ico-green{background:var(--green-lt);}
+.ico-purple{background:var(--purple-lt);}
+.ico-amber{background:var(--amber-lt);}
+.ico-navy{background:rgba(1,33,63,.08);}
+.sec-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--navy);}
+.sec-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.sec-bd{padding:24px 22px;}
+
+/* type badges */
+.tbadge{font-size:10px;font-weight:800;padding:4px 11px;border-radius:20px;letter-spacing:.6px;text-transform:uppercase;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.tb-single{background:var(--blue-lt);color:var(--blue);}
+.tb-multi{background:var(--accent-lt);color:var(--accent);}
+.tb-multi::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent);}
+.tb-single::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--blue);}
+
+/* ─── FORM ─── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+.gf{grid-column:1/-1;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.4px;text-transform:uppercase;}
+.req{color:var(--red);}
+.hint{font-size:11px;color:var(--lighter);margin-top:2px;}
+input,select,textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Figtree',sans-serif;font-size:13px;color:var(--text);background:var(--bg);outline:none;transition:.18s;resize:vertical;}
+input:focus,select:focus,textarea:focus{border-color:var(--blue-m);box-shadow:0 0 0 3px rgba(0,114,229,.10);background:#fff;}
+textarea{line-height:1.6;min-height:88px;}
+.cc{font-size:10px;color:var(--lighter);text-align:right;margin-top:2px;}
+.div{height:1px;background:var(--border);margin:20px 0;}
+
+/* ─── UPLOAD ─── */
+.upzone{border:2px dashed var(--border);border-radius:9px;padding:20px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg);position:relative;}
+.upzone:hover{border-color:var(--blue-m);background:var(--blue-lt);}
+.upzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.up-icon{font-size:24px;margin-bottom:6px;}
+.up-txt{font-size:12px;color:var(--muted);}
+.up-txt b{color:var(--blue-m);}
+.up-spec{font-size:10px;color:var(--lighter);margin-top:3px;}
+.up-prev{display:none;width:100%;max-height:90px;object-fit:cover;border-radius:7px;margin-top:8px;}
+
+/* ─── TOGGLE ─── */
+.trow{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;background:var(--bg);border-radius:8px;border:1px solid var(--border);}
+.trow+.trow{margin-top:8px;}
+.tl{font-size:13px;font-weight:600;color:var(--text);}
+.td{font-size:11px;color:var(--muted);margin-top:1px;}
+.sw{position:relative;width:42px;height:23px;flex-shrink:0;}
+.sw input{opacity:0;width:0;height:0;}
+.sl{position:absolute;inset:0;border-radius:23px;background:#CBD5E1;cursor:pointer;transition:.2s;}
+.sl::before{content:'';position:absolute;width:17px;height:17px;bottom:3px;left:3px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.sw input:checked+.sl{background:var(--blue-m);}
+.sw input:checked+.sl::before{transform:translateX(19px);}
+
+/* ─── COLOR ─── */
+.crow{display:flex;align-items:center;gap:8px;}
+.crow input[type=color]{width:38px;height:38px;padding:2px;border-radius:7px;border:1.5px solid var(--border);cursor:pointer;background:none;}
+.crow input[type=text]{flex:1;}
+
+/* ─── LIMIT BAR ─── */
+.limit-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:9px;padding:10px 15px;margin-bottom:16px;
+}
+.limit-info{display:flex;align-items:center;gap:10px;}
+.limit-label{font-size:12px;font-weight:600;color:var(--muted);}
+.limit-track{display:flex;gap:5px;}
+.limit-pip{width:22px;height:8px;border-radius:4px;background:var(--border);transition:.3s;}
+.limit-pip.used{background:var(--blue-m);}
+.limit-pip.used.full{background:var(--amber);}
+.limit-pip.used.over{background:var(--red);}
+.limit-text{font-size:12px;font-weight:700;}
+.limit-text.ok{color:var(--blue-m);}
+.limit-text.warn{color:var(--amber);}
+.limit-text.full{color:var(--red);}
+
+/* ─── REPEATER ─── */
+.rep-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.rep-count{font-size:12px;color:var(--muted);font-weight:500;}
+
+.add-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:'Figtree',sans-serif;font-size:12px;font-weight:700;transition:.18s;}
+.add-btn:hover{background:var(--blue);}
+.add-btn:disabled{background:#B0C4D8;cursor:not-allowed;opacity:.7;}
+.add-btn .pl{font-size:17px;line-height:1;}
+
+.rep-list{display:flex;flex-direction:column;gap:14px;}
+
+.rcard{border:1.5px solid var(--border);border-radius:11px;background:var(--bg);overflow:hidden;animation:sIn .22s ease both;}
+@keyframes sIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+.rcard:hover{border-color:#B0CFEE;box-shadow:0 2px 10px rgba(0,56,115,.07);}
+
+.rcard-hd{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:var(--white);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
+.rc-l{display:flex;align-items:center;gap:10px;}
+.rc-drag{color:var(--border);font-size:16px;cursor:grab;transition:.15s;}
+.rc-drag:hover{color:var(--muted);}
+.rc-num{width:26px;height:26px;border-radius:7px;background:var(--blue-lt);color:var(--blue);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;}
+.rc-num.orange{background:var(--accent-lt);color:var(--accent);}
+.rc-num.green{background:var(--green-lt);color:var(--green);}
+.rc-title{font-size:13px;font-weight:600;color:var(--text);}
+.rc-title.ph{color:var(--lighter);}
+.rc-right{display:flex;align-items:center;gap:5px;}
+.rc-vis{font-size:12px;padding:3px 9px;border-radius:6px;background:none;border:1px solid var(--border);cursor:pointer;color:var(--muted);transition:.15s;}
+.rc-vis:hover{background:var(--bg);}
+.rc-del{font-size:12px;padding:3px 9px;border-radius:6px;background:none;border:1px solid transparent;cursor:pointer;color:var(--lighter);transition:.15s;}
+.rc-del:hover{background:var(--red-lt);color:var(--red);border-color:#FBCACA;}
+
+.rcard-bd{padding:18px 16px;}
+.rcard-bd.collapsed{display:none;}
+
+/* empty */
+.empty{text-align:center;padding:36px 20px;border:2px dashed var(--border);border-radius:10px;color:var(--muted);}
+.empty-ic{font-size:32px;margin-bottom:8px;opacity:.5;}
+.empty-tx{font-size:13px;}
+
+/* icon picker */
+.icon-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px;}
+.icon-opt{width:40px;height:40px;border-radius:9px;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:.15s;}
+.icon-opt:hover{border-color:var(--blue-m);background:var(--blue-lt);}
+.icon-opt.sel{border-color:var(--blue-m);background:var(--blue-lt);}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:22px;right:28px;z-index:999;background:var(--green);color:#fff;padding:11px 20px;border-radius:9px;font-size:13px;font-weight:600;box-shadow:0 4px 18px rgba(4,168,90,.28);display:flex;align-items:center;gap:8px;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.warn{background:var(--amber);}
+.toast.err{background:var(--red);}
+
+/* ─── URL PAIR ─── */
+.url-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px;background:var(--bg);border-radius:9px;border:1px solid var(--border);margin-bottom:10px;}
+.url-pair-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;grid-column:1/-1;display:flex;align-items:center;gap:8px;}
+
+/* responsive */
+@media(max-width:860px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .g2,.g3{grid-template-columns:1fr;}
+  .content{padding:18px 18px 48px;}
+  .url-pair{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="s-logo">
+    <div class="s-logo-box">E</div>
+    <div>
+      <div class="s-logo-name">EParts CMS</div>
+      <div class="s-logo-sub">Homepage Editor</div>
+    </div>
+  </div>
+
+  <div class="s-sep">Sections</div>
+
+  <div class="s-item active"><span class="si">🏠</span> Homepage</div>
+
+  <div class="s-subitem" onclick="scrollTo('s-company')"><span class="dot dot-single"></span> Company Info</div>
+  <div class="s-subitem" onclick="scrollTo('s-banner')"><span class="dot dot-multi"></span> Hero Banners</div>
+  <div class="s-subitem" onclick="scrollTo('s-features')"><span class="dot dot-multi"></span> Features</div>
+  <div class="s-subitem" onclick="scrollTo('s-services')"><span class="dot dot-multi"></span> Services</div>
+  <div class="s-subitem" onclick="scrollTo('s-buyer')"><span class="dot dot-single"></span> Buyer Section</div>
+  <div class="s-subitem" onclick="scrollTo('s-seller')"><span class="dot dot-single"></span> Seller Section</div>
+  <div class="s-subitem" onclick="scrollTo('s-mobile')"><span class="dot dot-single"></span> Mobile App</div>
+  <div class="s-subitem" onclick="scrollTo('s-footer')"><span class="dot dot-single"></span> Footer</div>
+  <div class="s-subitem" onclick="scrollTo('s-urls')"><span class="dot dot-single"></span> URLs & Links</div>
+
+  <div class="s-sep">Other</div>
+  <div class="s-item"><span class="si">📝</span> Blog</div>
+  <div class="s-item"><span class="si">⚙️</span> Settings</div>
+
+  <div style="flex:1"></div>
+  <button class="s-save" onclick="saveAll()">💾 &nbsp;Save All Changes</button>
+</aside>
+
+<!-- ═══════ MAIN ═══════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="t-bc">Dashboard → Pages → <b>Homepage</b></div>
+    <div class="t-right">
+      <button class="t-btn t-prev">👁 Preview</button>
+      <button class="t-btn t-pub" onclick="publish()">🚀 Publish</button>
+      <div class="t-av">SA</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="pg-head">
+      <div class="pg-title">Homepage Content Manager</div>
+      <div class="pg-desc">All sections of the EParts public homepage. Single-entry sections have one form. Multiple-entry sections have limits enforced below each repeater.</div>
+      <div class="pg-chips">
+        <span class="chip chip-s">🔵 Single Entry × 6</span>
+        <span class="chip chip-m">🟠 Multiple Entry × 3</span>
+        <span class="chip chip-g">🟢 Live</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         1. COMPANY INFO — SINGLE
+    ══════════════════════════════ -->
+    <div class="sec" id="s-company">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-blue">🏢</div>
+          <div>
+            <div class="sec-name">Company Information</div>
+            <div class="sec-sub">Global identity — name, logo, contact, brand colours</div>
+          </div>
+        </div>
+        <span class="tbadge tb-single">Single Entry</span>
+      </div>
+      <div class="sec-bd">
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="field">
+            <label>Company Name <span class="req">*</span></label>
+            <input type="text" value="EParts">
+          </div>
+          <div class="field">
+            <label>Tagline</label>
+            <input type="text" value="Your Trusted Auto Parts Platform">
+          </div>
+        </div>
+        <div class="g3" style="margin-bottom:18px;">
+          <div class="field">
+            <label>Phone <span class="req">*</span></label>
+            <input type="tel" value="+971 (800) 3973787">
+          </div>
+          <div class="field">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" value="info@eparts.ae">
+          </div>
+          <div class="field">
+            <label>Website</label>
+            <input type="url" value="https://www.eparts.ae">
+          </div>
+        </div>
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="field">
+            <label>Brand Colour</label>
+            <div class="crow">
+              <input type="color" value="#0056B3" oninput="this.nextElementSibling.value=this.value">
+              <input type="text" value="#0056B3">
+            </div>
+          </div>
+          <div class="field">
+            <label>Accent Colour</label>
+            <div class="crow">
+              <input type="color" value="#E8550A" oninput="this.nextElementSibling.value=this.value">
+              <input type="text" value="#E8550A">
+            </div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Company Logo</label>
+            <div class="upzone" onclick="this.querySelector('input').click()">
+              <input type="file" accept="image/*" onchange="upPrev(this,'cp')">
+              <div class="up-icon">🏷️</div>
+              <div class="up-txt"><b>Upload Logo</b> — SVG preferred</div>
+              <div class="up-spec">SVG / PNG · Transparent bg · Max 1MB</div>
+              <img id="cp" class="up-prev">
+            </div>
+          </div>
+          <div class="field">
+            <label>Favicon</label>
+            <div class="upzone" onclick="this.querySelector('input').click()">
+              <input type="file" accept="image/*" onchange="upPrev(this,'fav')">
+              <div class="up-icon">📌</div>
+              <div class="up-txt"><b>Upload Favicon</b></div>
+              <div class="up-spec">ICO / PNG · 32×32px</div>
+              <img id="fav" class="up-prev">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         2. HERO BANNERS — MULTIPLE (max 5)
+    ══════════════════════════════ -->
+    <div class="sec" id="s-banner">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-orange">🎯</div>
+          <div>
+            <div class="sec-name">Hero Banners</div>
+            <div class="sec-sub">Rotating homepage hero slides — limited to 5 max</div>
+          </div>
+        </div>
+        <span class="tbadge tb-multi">Multiple · Max 5</span>
+      </div>
+      <div class="sec-bd">
+        <div class="limit-bar">
+          <div class="limit-info">
+            <span class="limit-label">Banner Slots Used</span>
+            <div class="limit-track" id="banner-track"></div>
+          </div>
+          <span class="limit-text ok" id="banner-ltext"></span>
+        </div>
+        <div class="rep-top">
+          <span class="rep-count" id="banner-count"></span>
+          <button class="add-btn" id="banner-addbtn" onclick="addItem('banner')"><span class="pl">+</span> Add Banner</button>
+        </div>
+        <div class="rep-list" id="banner-list"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         3. FEATURES — MULTIPLE (max 6)
+    ══════════════════════════════ -->
+    <div class="sec" id="s-features">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-purple">⚡</div>
+          <div>
+            <div class="sec-name">Homepage Features</div>
+            <div class="sec-sub">Feature strip shown below the hero — limited to 6 max</div>
+          </div>
+        </div>
+        <span class="tbadge tb-multi">Multiple · Max 6</span>
+      </div>
+      <div class="sec-bd">
+        <div class="limit-bar">
+          <div class="limit-info">
+            <span class="limit-label">Feature Slots Used</span>
+            <div class="limit-track" id="feat-track"></div>
+          </div>
+          <span class="limit-text ok" id="feat-ltext"></span>
+        </div>
+        <div class="rep-top">
+          <span class="rep-count" id="feat-count"></span>
+          <button class="add-btn" id="feat-addbtn" onclick="addItem('feat')"><span class="pl">+</span> Add Feature</button>
+        </div>
+        <div class="rep-list" id="feat-list"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         4. SERVICES — MULTIPLE (max 8)
+    ══════════════════════════════ -->
+    <div class="sec" id="s-services">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-green">🛠️</div>
+          <div>
+            <div class="sec-name">Services Offered</div>
+            <div class="sec-sub">Service tiles in the dark blue grid section — limited to 8 max</div>
+          </div>
+        </div>
+        <span class="tbadge tb-multi">Multiple · Max 8</span>
+      </div>
+      <div class="sec-bd">
+        <div class="limit-bar">
+          <div class="limit-info">
+            <span class="limit-label">Service Slots Used</span>
+            <div class="limit-track" id="svc-track"></div>
+          </div>
+          <span class="limit-text ok" id="svc-ltext"></span>
+        </div>
+        <div class="rep-top">
+          <span class="rep-count" id="svc-count"></span>
+          <button class="add-btn" id="svc-addbtn" onclick="addItem('svc')"><span class="pl">+</span> Add Service</button>
+        </div>
+        <div class="rep-list" id="svc-list"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         5. BUYER SECTION — SINGLE
+    ══════════════════════════════ -->
+    <div class="sec" id="s-buyer">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-blue">🚗</div>
+          <div>
+            <div class="sec-name">Become a Buyer Section</div>
+            <div class="sec-sub">Heading, body, CTA and image for the Buyer block</div>
+          </div>
+        </div>
+        <span class="tbadge tb-single">Single Entry</span>
+      </div>
+      <div class="sec-bd">
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="field gf">
+            <label>Section Heading <span class="req">*</span></label>
+            <input type="text" value="BECOME A BUYER">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:18px;">
+          <label>Body Text <span class="req">*</span></label>
+          <textarea rows="4">EParts with large number of reputed, cost effective OEM parts for all brands of automobiles. Our special tie ups with manufacturer and other supplier ensure that you get the right and earn higher margins on parts.</textarea>
+        </div>
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="field">
+            <label>CTA Button Text</label>
+            <input type="text" value="Read More">
+          </div>
+          <div class="field">
+            <label>CTA Link / URL</label>
+            <input type="url" value="/become-buyer">
+          </div>
+        </div>
+        <div class="field">
+          <label>Section Image</label>
+          <div class="upzone" onclick="this.querySelector('input').click()">
+            <input type="file" accept="image/*" onchange="upPrev(this,'buyer-img')">
+            <div class="up-icon">🖼️</div>
+            <div class="up-txt"><b>Upload car/buyer illustration</b></div>
+            <div class="up-spec">PNG / WEBP · Transparent bg preferred · Max 3MB</div>
+            <img id="buyer-img" class="up-prev">
+          </div>
+        </div>
+        <div class="div"></div>
+        <div class="trow">
+          <div><div class="tl">Show Buyer Section</div><div class="td">Toggle visibility on homepage</div></div>
+          <label class="sw"><input type="checkbox" checked><span class="sl"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         6. SELLER SECTION — SINGLE
+    ══════════════════════════════ -->
+    <div class="sec" id="s-seller">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-orange">📦</div>
+          <div>
+            <div class="sec-name">Become a Seller Section</div>
+            <div class="sec-sub">Heading, body, CTA and image for the Seller block</div>
+          </div>
+        </div>
+        <span class="tbadge tb-single">Single Entry</span>
+      </div>
+      <div class="sec-bd">
+        <div class="field" style="margin-bottom:18px;">
+          <label>Section Heading <span class="req">*</span></label>
+          <input type="text" value="BECOME A SELLER">
+        </div>
+        <div class="field" style="margin-bottom:18px;">
+          <label>Body Text <span class="req">*</span></label>
+          <textarea rows="4">On EParts connect to thousands of buyers who can discover parts on your platform and place orders online. Suddenly your business grows at a pace you never ever imagined. Set up an order fulfilment system for your business with EParts.</textarea>
+        </div>
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="field">
+            <label>CTA Button Text</label>
+            <input type="text" value="Read More">
+          </div>
+          <div class="field">
+            <label>CTA Link / URL</label>
+            <input type="url" value="/become-seller">
+          </div>
+        </div>
+        <div class="field">
+          <label>Section Image</label>
+          <div class="upzone" onclick="this.querySelector('input').click()">
+            <input type="file" accept="image/*" onchange="upPrev(this,'seller-img')">
+            <div class="up-icon">🖼️</div>
+            <div class="up-txt"><b>Upload seller/warehouse illustration</b></div>
+            <div class="up-spec">PNG / WEBP · Transparent bg preferred · Max 3MB</div>
+            <img id="seller-img" class="up-prev">
+          </div>
+        </div>
+        <div class="div"></div>
+        <div class="trow">
+          <div><div class="tl">Show Seller Section</div><div class="td">Toggle visibility on homepage</div></div>
+          <label class="sw"><input type="checkbox" checked><span class="sl"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         7. MOBILE APP — SINGLE
+    ══════════════════════════════ -->
+    <div class="sec" id="s-mobile">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-navy">📱</div>
+          <div>
+            <div class="sec-name">Mobile App Section</div>
+            <div class="sec-sub">App Store / Google Play download block — one record</div>
+          </div>
+        </div>
+        <span class="tbadge tb-single">Single Entry</span>
+      </div>
+      <div class="sec-bd">
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="field gf">
+            <label>Section Headline</label>
+            <input type="text" value="Get EParts for your smartphone, Access EParts From Anywhere">
+          </div>
+        </div>
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="field">
+            <label>App Store URL</label>
+            <input type="url" placeholder="https://apps.apple.com/...">
+          </div>
+          <div class="field">
+            <label>Google Play URL</label>
+            <input type="url" placeholder="https://play.google.com/...">
+          </div>
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Phone Mockup Image</label>
+            <div class="upzone" onclick="this.querySelector('input').click()">
+              <input type="file" accept="image/*" onchange="upPrev(this,'mob-img')">
+              <div class="up-icon">📱</div>
+              <div class="up-txt"><b>Upload phone mockup</b></div>
+              <div class="up-spec">PNG · Transparent bg · Max 2MB</div>
+              <img id="mob-img" class="up-prev">
+            </div>
+          </div>
+          <div class="field">
+            <label>QR Code Image</label>
+            <div class="upzone" onclick="this.querySelector('input').click()">
+              <input type="file" accept="image/*" onchange="upPrev(this,'qr-img')">
+              <div class="up-icon">⬛</div>
+              <div class="up-txt"><b>Upload QR code</b></div>
+              <div class="up-spec">PNG · 300×300px recommended</div>
+              <img id="qr-img" class="up-prev">
+            </div>
+          </div>
+        </div>
+        <div class="div"></div>
+        <div class="trow">
+          <div><div class="tl">Show Mobile App Section</div><div class="td">Toggle the full download block</div></div>
+          <label class="sw"><input type="checkbox" checked><span class="sl"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         8. FOOTER — SINGLE
+    ══════════════════════════════ -->
+    <div class="sec" id="s-footer">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-amber">📋</div>
+          <div>
+            <div class="sec-name">Footer</div>
+            <div class="sec-sub">Copyright text, footer tagline and partner badge images</div>
+          </div>
+        </div>
+        <span class="tbadge tb-single">Single Entry</span>
+      </div>
+      <div class="sec-bd">
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="field gf">
+            <label>Copyright Text</label>
+            <input type="text" value="Copyright 2024 © German Experts Maintenance LLC. All Rights Reserved.">
+          </div>
+        </div>
+        <div class="g3" style="margin-bottom:18px;">
+          <div class="field">
+            <label>𝕏 (Twitter) URL</label>
+            <input type="url" placeholder="https://x.com/eparts">
+          </div>
+          <div class="field">
+            <label>Facebook URL</label>
+            <input type="url" placeholder="https://facebook.com/eparts">
+          </div>
+          <div class="field">
+            <label>Instagram URL</label>
+            <input type="url" placeholder="https://instagram.com/eparts">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:18px;">
+          <label>Partner / Trust Badges (Visa, Mastercard, Secure)</label>
+          <div class="upzone" onclick="this.querySelector('input').click()">
+            <input type="file" accept="image/*" multiple>
+            <div class="up-icon">🛡️</div>
+            <div class="up-txt"><b>Upload badge images</b> (multiple allowed)</div>
+            <div class="up-spec">PNG · Transparent bg · Max 500KB each</div>
+          </div>
+        </div>
+        <div class="trow">
+          <div><div class="tl">Show Microsoft Secure Badge</div><div class="td">Displays the Microsoft Azure trust icon</div></div>
+          <label class="sw"><input type="checkbox" checked><span class="sl"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         9. URLs & NAV LINKS — SINGLE
+    ══════════════════════════════ -->
+    <div class="sec" id="s-urls">
+      <div class="sec-hd">
+        <div class="sec-hd-l">
+          <div class="sec-ico ico-purple">🔗</div>
+          <div>
+            <div class="sec-name">URLs & Navigation Links</div>
+            <div class="sec-sub">Header nav, footer column links, login & blog paths</div>
+          </div>
+        </div>
+        <span class="tbadge tb-single">Single Entry</span>
+      </div>
+      <div class="sec-bd">
+
+        <!-- Header nav -->
+        <div class="url-pair">
+          <div class="url-pair-label">🔝 Header Navigation</div>
+          <div class="field"><label>Home URL</label><input type="url" value="/"></div>
+          <div class="field"><label>Blog URL</label><input type="url" value="/blog"></div>
+          <div class="field"><label>Contact Us URL</label><input type="url" value="/contact"></div>
+          <div class="field"><label>About Us URL</label><input type="url" value="/about"></div>
+          <div class="field"><label>Login URL</label><input type="url" value="/login"></div>
+        </div>
+
+        <!-- Footer col 1 -->
+        <div class="url-pair">
+          <div class="url-pair-label">📋 Footer — About Column</div>
+          <div class="field"><label>About Us</label><input type="url" value="/about"></div>
+          <div class="field"><label>Pricing</label><input type="url" value="/pricing"></div>
+          <div class="field"><label>Offers</label><input type="url" value="/offers"></div>
+          <div class="field"><label>Team</label><input type="url" value="/team"></div>
+        </div>
+
+        <!-- Footer col 2 -->
+        <div class="url-pair">
+          <div class="url-pair-label">📚 Footer — Resources Column</div>
+          <div class="field"><label>Community</label><input type="url" value="/community"></div>
+          <div class="field"><label>Become a Partner</label><input type="url" value="/partner"></div>
+          <div class="field"><label>Our Technologies</label><input type="url" value="/tech"></div>
+          <div class="field"><label>Documentation</label><input type="url" value="/docs"></div>
+        </div>
+
+        <!-- Footer col 3 -->
+        <div class="url-pair">
+          <div class="url-pair-label">🆘 Footer — Support Column</div>
+          <div class="field"><label>Contact Us</label><input type="url" value="/contact"></div>
+          <div class="field"><label>Terms of Use</label><input type="url" value="/terms"></div>
+          <div class="field"><label>Privacy Policy</label><input type="url" value="/privacy"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════
+const CONFIGS = {
+  banner: {
+    max: 5,
+    color: 'orange',
+    seed: [
+      { id:1, title:'Welcome to EParts', sub:'Your trusted source for auto parts', active:true },
+      { id:2, title:'Ramadan Special Offer', sub:'Up to 30% off OEM parts this month', active:true },
+    ],
+    fields: (f) => `
+      <div class="g2" style="margin-bottom:14px;">
+        <div class="field"><label>Banner Headline <span class="req">*</span></label>
+          <input type="text" value="${f.title||''}" placeholder="e.g. Welcome to EParts"
+            oninput="updateFld('banner',${f.id},'title',this.value)"></div>
+        <div class="field"><label>Sub-headline</label>
+          <input type="text" value="${f.sub||''}" placeholder="Short tagline"
+            oninput="updateFld('banner',${f.id},'sub',this.value)"></div>
+      </div>
+      <div class="g2" style="margin-bottom:14px;">
+        <div class="field"><label>CTA Text</label><input type="text" value="${f.cta||''}" placeholder="e.g. Shop Now"></div>
+        <div class="field"><label>CTA Link</label><input type="url" value="${f.link||''}" placeholder="/products"></div>
+      </div>
+      <div class="field"><label>Banner Image</label>
+        <div class="upzone" onclick="this.querySelector('input').click()">
+          <input type="file" accept="image/*" onchange="upPrev(this,'bimg-${f.id}')">
+          <div class="up-icon">🖼️</div><div class="up-txt"><b>Upload banner image</b></div>
+          <div class="up-spec">JPG/PNG/WEBP · 1440×680px · Max 5MB</div>
+          <img id="bimg-${f.id}" class="up-prev">
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="trow">
+          <div><div class="tl">Banner Active</div><div class="td">Show this slide in the rotation</div></div>
+          <label class="sw"><input type="checkbox" ${f.active?'checked':''}><span class="sl"></span></label>
+        </div>
+      </div>`
+  },
+
+  feat: {
+    max: 6,
+    color: 'blue',
+    seed: [
+      { id:1, icon:'📱', title:'Mobile and Tablet Friendly', desc:'Responsive on all devices', active:true },
+      { id:2, icon:'🏆', title:'Product Recommendations', desc:'AI-driven part suggestions', active:true },
+      { id:3, icon:'🛒', title:'Easy-to-Use Checkout', desc:'Streamlined payment flow', active:true },
+      { id:4, icon:'✅', title:'Feature Test Check', desc:'Verifying all features work', active:true },
+    ],
+    fields: (f) => `
+      <div class="g2" style="margin-bottom:14px;">
+        <div class="field"><label>Feature Title <span class="req">*</span></label>
+          <input type="text" value="${f.title||''}" placeholder="e.g. Fast Delivery"
+            oninput="updateFld('feat',${f.id},'title',this.value)"></div>
+        <div class="field"><label>Short Description</label>
+          <input type="text" value="${f.desc||''}" placeholder="One-line description"
+            oninput="updateFld('feat',${f.id},'desc',this.value)"></div>
+      </div>
+      <div class="field"><label>Icon</label>
+        <div class="icon-grid">
+          ${['📱','🏆','🛒','✅','🚚','🔍','⭐','🔧','🛡️','💡','📦','🔔','🌍','⚡','🎯','💰']
+            .map(ic=>`<div class="icon-opt${ic===f.icon?' sel':''}"
+              onclick="selIcon('feat',${f.id},'${ic}',this)">${ic}</div>`).join('')}
+        </div>
+      </div>`
+  },
+
+  svc: {
+    max: 8,
+    color: 'green',
+    seed: [
+      { id:1, icon:'🏅', title:'Genuine & OEM Spare Parts', desc:'High-quality components from trusted manufacturers', active:true },
+      { id:2, icon:'🚚', title:'Fast & Reliable Delivery', desc:'Quick dispatch and secure shipping', active:true },
+      { id:3, icon:'🌍', title:'Wide Vehicle Compatibility', desc:'Parts for multiple brands and models', active:true },
+      { id:4, icon:'📦', title:'Workshop & Bulk Supply', desc:'Special pricing for garages and fleet owners', active:true },
+      { id:5, icon:'🔍', title:'Easy Part Search', desc:'Find parts using smart filters and fitment', active:true },
+      { id:6, icon:'🎧', title:'Customer Support & Guidance', desc:'Expert help to choose the right part', active:true },
+    ],
+    fields: (f) => `
+      <div class="g2" style="margin-bottom:14px;">
+        <div class="field"><label>Service Title <span class="req">*</span></label>
+          <input type="text" value="${f.title||''}" placeholder="e.g. Fast Delivery"
+            oninput="updateFld('svc',${f.id},'title',this.value)"></div>
+        <div class="field"><label>Description</label>
+          <input type="text" value="${f.desc||''}" placeholder="Short description"
+            oninput="updateFld('svc',${f.id},'desc',this.value)"></div>
+      </div>
+      <div class="field"><label>Icon</label>
+        <div class="icon-grid">
+          ${['🏅','🚚','🌍','📦','🔍','🎧','🔧','🛡️','⭐','💡','✅','🏆','📱','🔔','⚡','🎯']
+            .map(ic=>`<div class="icon-opt${ic===f.icon?' sel':''}"
+              onclick="selIcon('svc',${f.id},'${ic}',this)">${ic}</div>`).join('')}
+        </div>
+      </div>`
+  }
+};
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+const state = {};
+let nextIds = {};
+Object.keys(CONFIGS).forEach(k => {
+  state[k] = CONFIGS[k].seed.map(x => ({...x}));
+  nextIds[k] = Math.max(...CONFIGS[k].seed.map(x=>x.id)) + 1;
+});
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
+function render(k) {
+  const cfg  = CONFIGS[k];
+  const items= state[k];
+  const max  = cfg.max;
+  const used = items.length;
+
+  // limit bar
+  const track  = document.getElementById(`${k}-track`);
+  const ltext  = document.getElementById(`${k}-ltext`);
+  const addbtn = document.getElementById(`${k}-addbtn`);
+  const count  = document.getElementById(`${k}-count`);
+
+  track.innerHTML = Array.from({length:max}, (_,i) => {
+    let cls = i < used ? 'limit-pip used' : 'limit-pip';
+    if(i < used && used === max) cls += ' full';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  const remaining = max - used;
+  if(used < max) {
+    ltext.textContent = `${used} / ${max} — ${remaining} slot${remaining!==1?'s':''} left`;
+    ltext.className = 'limit-text ok';
+    addbtn.disabled = false;
+  } else {
+    ltext.textContent = `${used} / ${max} — Limit reached`;
+    ltext.className = 'limit-text full';
+    addbtn.disabled = true;
+  }
+  count.textContent = `${used} entr${used!==1?'ies':'y'}`;
+
+  // list
+  const list = document.getElementById(`${k}-list`);
+  if(!items.length){
+    list.innerHTML=`<div class="empty"><div class="empty-ic">📭</div><div class="empty-tx">No entries yet. Click <strong>+ Add</strong> to begin.</div></div>`;
+    return;
+  }
+
+  list.innerHTML = items.map((f,i) => `
+    <div class="rcard" id="${k}card-${f.id}">
+      <div class="rcard-hd" onclick="toggleBody('${k}',${f.id})">
+        <div class="rc-l">
+          <span class="rc-drag" onclick="event.stopPropagation()">⠿</span>
+          <div class="rc-num ${k==='svc'?'green':k==='feat'?'':''}">${i+1}</div>
+          <div class="rc-title ${f.title?'':'ph'}">${f.title || 'Untitled'}</div>
+        </div>
+        <div class="rc-right" onclick="event.stopPropagation()">
+          <button class="rc-vis" onclick="toggleVis('${k}',${f.id})">${f.active?'👁 On':'🙈 Off'}</button>
+          <button class="rc-del" onclick="delItem('${k}',${f.id})">🗑 Delete</button>
+        </div>
+      </div>
+      <div class="rcard-bd collapsed" id="${k}body-${f.id}">
+        ${cfg.fields(f)}
+      </div>
+    </div>`).join('');
+}
+
+function toggleBody(k, id){
+  document.getElementById(`${k}body-${id}`).classList.toggle('collapsed');
+}
+
+function addItem(k){
+  const max = CONFIGS[k].max;
+  if(state[k].length >= max){ showToast(`Max ${max} entries allowed for this section`,'warn'); return; }
+  const id = nextIds[k]++;
+  state[k].push({ id, title:'', desc:'', sub:'', icon: k==='feat'?'💡':k==='svc'?'⚡':'🎯', active:true, cta:'', link:'' });
+  render(k);
+  // auto-open new
+  setTimeout(()=>{
+    const b = document.getElementById(`${k}body-${id}`);
+    if(b) b.classList.remove('collapsed');
+    document.getElementById(`${k}card-${id}`).scrollIntoView({behavior:'smooth',block:'nearest'});
+  }, 50);
+}
+
+function delItem(k, id){
+  state[k] = state[k].filter(f=>f.id!==id);
+  render(k);
+}
+
+function toggleVis(k, id){
+  const f = state[k].find(f=>f.id===id);
+  if(f) f.active = !f.active;
+  render(k);
+}
+
+function updateFld(k, id, key, val){
+  const f = state[k].find(f=>f.id===id);
+  if(f){ f[key]=val; }
+  // live update header title
+  const card = document.getElementById(`${k}card-${id}`);
+  if(card && key==='title'){
+    const t = card.querySelector('.rc-title');
+    t.textContent = val || 'Untitled';
+    t.classList.toggle('ph', !val);
+  }
+}
+
+function selIcon(k, id, icon, el){
+  const f = state[k].find(f=>f.id===id);
+  if(f) f.icon = icon;
+  el.closest('.icon-grid').querySelectorAll('.icon-opt').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ═══════════════════════════════════════════
+//  IMAGE UPLOAD PREVIEW
+// ═══════════════════════════════════════════
+function upPrev(input, prevId){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=document.getElementById(prevId);
+    if(!img) return;
+    img.src=e.target.result; img.style.display='block';
+    ['up-icon','up-txt','up-spec'].forEach(c=>{
+      const el=img.closest('.upzone').querySelector('.'+c);
+      if(el) el.style.display='none';
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════
+//  SCROLL TO SECTION
+// ═══════════════════════════════════════════
+function scrollTo(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ═══════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════
+function showToast(msg, type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent = type==='ok' ? '✅ '+msg : type==='warn' ? '⚠️ '+msg : '❌ '+msg;
+  t.className = 'toast show' + (type!=='ok'?' '+type:'');
+  clearTimeout(t._to);
+  t._to=setTimeout(()=>t.classList.remove('show'),3200);
+}
+function saveAll(){ showToast('All changes saved successfully'); }
+function publish(){ showToast('Homepage published!'); }
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+['banner','feat','svc'].forEach(render);
+</script>
+</body>
+</html>
